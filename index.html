@@ -104,12 +104,71 @@ function buatProrata(golongan,periodeAwal,periodeAkhir,modeBulan){
 }
 
 function hitungMutasiMasukBaru(golongan,jatuhTempoLama,tanggalDaftar,pemutihan){const data=TARIF[golongan];if(!data)throw new Error("Golongan kendaraan tidak valid.");const sw=data.swdkllj,kd=data.kd,pokokTahunan=sw+kd,masaLakuBaru=tambahTahun(tanggalDaftar,1);const rincian=[];let totalPokok=0,totalDenda=0;if(jatuhTempoLama>tanggalDaftar){const prorata=buatProrata(golongan,jatuhTempoLama,masaLakuBaru,"baru");if(prorata){rincian.push(prorata);totalPokok+=prorata.pokok}}else{const jatuhTempoBerjalan=anniversaryOnOrBefore(tanggalDaftar,jatuhTempoLama.getMonth(),jatuhTempoLama.getDate()),akhirTahunBerjalan=tambahTahun(jatuhTempoBerjalan,1),hariTerlambat=Math.max(0,selisihHari(jatuhTempoBerjalan,tanggalDaftar));let denda=tarifDenda(sw,hariTerlambat,jatuhTempoBerjalan);if(pemutihan)denda=0;rincian.push({tipe:"tahun",uraian:"Tahun Berjalan",periodeAwal:new Date(jatuhTempoBerjalan),periodeAkhir:new Date(akhirTahunBerjalan),bulan:12,pokok:pokokTahunan,denda,total:pokokTahunan+denda});totalPokok+=pokokTahunan;totalDenda+=denda;const prorata=buatProrata(golongan,akhirTahunBerjalan,masaLakuBaru,"baru");if(prorata){rincian.push(prorata);totalPokok+=prorata.pokok}}rincian.sort((a,b)=>a.periodeAwal-b.periodeAwal);return{mode:"Mutasi Masuk",golongan,jenis:data.nama,swdkllj:sw,kd,tanggalDaftar,jatuhTempoLama,masaLakuBaru,pemutihan,rincian,totalPokok,totalDenda,totalBayar:totalPokok+totalDenda}}
-function hitungMutasiKeluar(golongan,jatuhTempoLama,tanggalMutasi,pemutihan){const data=TARIF[golongan];if(!data)throw new Error("Golongan kendaraan tidak valid.");const sw=data.swdkllj,kd=data.kd,pokokTahunan=sw+kd,rincian=[];let totalPokok=0,totalDenda=0,catatan="";const sudahTertunggakSatuTahun=tanggalMutasi>=tambahTahun(jatuhTempoLama,1);if(sudahTertunggakSatuTahun){const periodeAwal=tambahTahun(jatuhTempoLama,-1),periodeAkhir=new Date(jatuhTempoLama),hariTerlambat=Math.max(0,selisihHari(jatuhTempoLama,tanggalMutasi));let denda=tarifDenda(sw,hariTerlambat,jatuhTempoLama);if(pemutihan)denda=0;rincian.push({tipe:"tahun",uraian:"Tahun Lalu",periodeAwal,periodeAkhir,bulan:12,pokok:pokokTahunan,denda,total:pokokTahunan+denda});totalPokok+=pokokTahunan;totalDenda+=denda;catatan="SWDKLLJ/TBPKP sudah tertunggak 1 tahun atau lebih. Samsat asal melakukan pengutipan 1 tahun lalu dan denda tahun lalu, tanpa prorata."}else{catatan="SWDKLLJ/TBPKP tertunggak kurang dari 1 tahun. Samsat asal tidak diperkenankan melakukan pengutipan."}return{mode:"Mutasi Keluar",golongan,jenis:data.nama,swdkllj:sw,kd,jatuhTempoLama,tanggalMutasi,pemutihan,rincian,totalPokok,totalDenda,totalBayar:totalPokok+totalDenda,catatan}}
+function hitungMutasiKeluar(golongan,jatuhTempoLama,tanggalMutasi,pemutihan){
+  const data=TARIF[golongan];
+  if(!data)throw new Error("Golongan kendaraan tidak valid.");
+
+  const sw=data.swdkllj;
+  const kd=data.kd;
+  const pokokTahunan=sw+kd;
+  const rincian=[];
+  let totalPokok=0,totalDenda=0;
+
+  // Untuk Mutasi Keluar, field "Masa Laku Awal / Jatuh Tempo Lama"
+  // diperlakukan sebagai awal masa berlaku tertunggak.
+  // Pengutipan dilakukan untuk seluruh tahun penuh yang sudah jatuh tempo,
+  // tanpa prorata.
+  let periodeAwal=new Date(jatuhTempoLama);
+
+  while(tambahTahun(periodeAwal,1)<=tanggalMutasi){
+    const periodeAkhir=tambahTahun(periodeAwal,1);
+    const hariTerlambat=Math.max(0,selisihHari(periodeAkhir,tanggalMutasi));
+
+    let denda=tarifDenda(sw,hariTerlambat,periodeAkhir);
+    if(pemutihan)denda=0;
+
+    rincian.push({
+      tipe:"tahun",
+      uraian:"Tahun Lalu",
+      periodeAwal:new Date(periodeAwal),
+      periodeAkhir:new Date(periodeAkhir),
+      bulan:12,
+      pokok:pokokTahunan,
+      denda,
+      total:pokokTahunan+denda
+    });
+
+    totalPokok+=pokokTahunan;
+    totalDenda+=denda;
+    periodeAwal=periodeAkhir;
+  }
+
+  const totalTahun=rincian.length;
+  rincian.forEach((r,i)=>{
+    r.uraian=totalTahun===1?"Tahun Lalu":`Tahun Lalu ${totalTahun-i}`;
+  });
+
+  return{
+    mode:"Mutasi Keluar",
+    golongan,
+    jenis:data.nama,
+    swdkllj:sw,
+    kd,
+    jatuhTempoLama,
+    tanggalMutasi,
+    pemutihan,
+    rincian,
+    totalPokok,
+    totalDenda,
+    totalBayar:totalPokok+totalDenda
+  };
+}
+
 function hitungMutasiMasukLama(golongan,tglLama,pemutihan,tglHitung){const data=TARIF[golongan];if(!data)throw new Error("Golongan kendaraan tidak valid.");const sw=data.swdkllj,kd=data.kd,pokokTahunan=sw+kd,tglBaru=tambahTahun(tglHitung,1),anchor=anniversaryOnOrBefore(tglBaru,tglLama.getMonth(),tglLama.getDate()),batas=tambahTahun(anchor,-BATAS_MAKS_TAHUN_PENUH),awal=tglLama>batas?tglLama:batas;let rincian=[],totalPokok=0,totalDenda=0,cursor=new Date(awal);while(cursor<anchor){const akhir=tambahTahun(cursor,1);if(akhir>anchor)break;const hariTerlambat=Math.max(0,selisihHari(cursor,tglHitung));let denda=tarifDenda(sw,hariTerlambat,cursor);const tahunBerjalan=akhir.getTime()===anchor.getTime();if(pemutihan&&!tahunBerjalan)denda=0;const pokok=pokokTahunan;rincian.push({tipe:"tahun",periodeAkhir:akhir,uraian:tahunBerjalan?"Tahun Berjalan":"",periodeAwal:new Date(cursor),bulan:12,pokok,denda,total:pokok+denda});totalPokok+=pokok;totalDenda+=denda;cursor=akhir}if(anchor<tglBaru){const prorata=buatProrata(golongan,anchor,tglBaru,"baru");if(prorata){rincian.push(prorata);totalPokok+=prorata.pokok}}rincian.sort((a,b)=>b.periodeAkhir-a.periodeAkhir);let no=0;rincian.forEach(r=>{if(r.tipe==="prorata")r.uraian="Prorata";else if(r.uraian!=="Tahun Berjalan"){no++;r.uraian=`Tahun Lalu ${no}`}});return{mode:"Mutasi Masuk Perhitungan Lama",golongan,jenis:data.nama,swdkllj:sw,kd,tglLama,tglHitung,tglBaru,anchor,batas,awal,pemutihan,rincian,totalPokok,totalDenda,totalBayar:totalPokok+totalDenda,terkena:tglLama<batas,catatan:"Perhitungan lama menggunakan maksimal 5 tahun penuh terakhir ditambah prorata, dengan pembulatan prorata 1–15 hari ke bawah dan lebih dari 15 hari ke atas."}}
 function isiGolongan(selectId){const s=document.getElementById(selectId);Object.entries(TARIF).forEach(([k,i])=>{const o=document.createElement("option");o.value=k;o.textContent=`${k} - ${i.nama}`;s.appendChild(o)})}function showAlert(id,m){const a=document.getElementById(id);a.textContent=m;a.style.display="block";document.getElementById("resultSection").style.display="none"}function clearAlerts(){["alertMasukBaru","alertKeluar","alertMasukLama"].forEach(id=>{const a=document.getElementById(id);a.textContent="";a.style.display="none"})}
 function renderResult(h){resultTitle.textContent="Hasil Perhitungan - "+h.mode;sumGolongan.textContent=h.golongan;sumPokok.textContent=rupiah(h.totalPokok);sumDenda.textContent=rupiah(h.totalDenda);sumTotal.textContent=rupiah(h.totalBayar);let tanggalHtml="";if(h.mode==="Mutasi Masuk"){tanggalHtml=`<p><b>Tanggal Pendaftaran:</b> ${formatDate(h.tanggalDaftar)}</p><p><b>Jatuh Tempo Lama:</b> ${formatDate(h.jatuhTempoLama)}</p><p><b>Masa Laku Baru:</b> ${formatDate(h.masaLakuBaru)}</p>`}else if(h.mode==="Mutasi Keluar"){tanggalHtml=`<p><b>Tanggal Mutasi Keluar:</b> ${formatDate(h.tanggalMutasi)}</p><p><b>Jatuh Tempo Lama:</b> ${formatDate(h.jatuhTempoLama)}</p>`}else{tanggalHtml=`<p><b>Tanggal Transaksi:</b> ${formatDate(h.tglHitung)}</p><p><b>Masa Laku Awal:</b> ${formatDate(h.tglLama)}</p><p><b>Masa Laku Baru:</b> ${formatDate(h.tglBaru)}</p><p><b>Awal Prorata:</b> ${formatDate(h.anchor)}</p>`}infoBox.innerHTML=`<p><b>Jenis Kendaraan:</b> ${h.jenis}</p><p><b>SWDKLLJ:</b> ${rupiah(h.swdkllj)} | <b>KD/Sertifikat:</b> ${rupiah(h.kd)}</p>${tanggalHtml}<p><b>Pemutihan Denda:</b> ${h.pemutihan?"YA":"TIDAK"}</p>${h.terkena?'<p class="note"><b>Catatan tambahan:</b> Masa berlaku lama melewati batas maksimal, sehingga hanya dihitung 5 tahun penuh terakhir ditambah prorata.</p>':""}`;rincianBody.innerHTML="";if(h.rincian.length===0){const tr=document.createElement("tr");tr.innerHTML=`<td colspan="6">Tidak ada pengutipan SWDKLLJ berdasarkan ketentuan yang dipilih.</td>`;rincianBody.appendChild(tr)}else{const rincianTampil=[...h.rincian].sort((a,b)=>{if(a.tipe==="prorata"&&b.tipe!=="prorata")return -1;if(a.tipe!=="prorata"&&b.tipe==="prorata")return 1;return b.periodeAkhir-a.periodeAkhir});rincianTampil.forEach(r=>{const tr=document.createElement("tr");tr.innerHTML=`<td>${r.uraian}</td><td>${formatDate(r.periodeAwal)} s/d ${formatDate(r.periodeAkhir)}</td><td>${r.bulan}</td><td>${rupiah(r.pokok)}</td><td>${rupiah(r.denda)}</td><td>${rupiah(r.total)}</td>`;rincianBody.appendChild(tr)})}footPokok.textContent=rupiah(h.totalPokok);footDenda.textContent=rupiah(h.totalDenda);footTotal.textContent=rupiah(h.totalBayar);resultSection.style.display="block";resultSection.scrollIntoView({behavior:"smooth",block:"start"})}
 function switchPage(targetId){document.querySelectorAll(".tab-btn").forEach(btn=>btn.classList.toggle("active",btn.dataset.target===targetId));document.querySelectorAll(".page").forEach(page=>page.classList.toggle("active",page.id===targetId));clearAlerts();document.getElementById("resultSection").style.display="none"}
 document.addEventListener("DOMContentLoaded",()=>{isiGolongan("golonganMasukBaru");isiGolongan("golonganKeluar");isiGolongan("golonganMasukLama");const today=toInputDate(new Date());tanggalMasukBaru.value=today;tanggalKeluar.value=today;tanggalMasukLama.value=today;document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",()=>switchPage(btn.dataset.target)));formMasukBaru.addEventListener("submit",e=>{e.preventDefault();clearAlerts();try{const g=golonganMasukBaru.value,jt=parseDate(jatuhTempoMasukBaru.value),t=parseDate(tanggalMasukBaru.value),p=pemutihanMasukBaru.value==="YA";if(!g)throw new Error("Golongan kendaraan wajib dipilih.");renderResult(hitungMutasiMasukBaru(g,jt,t,p))}catch(x){showAlert("alertMasukBaru",x.message)}});formKeluar.addEventListener("submit",e=>{e.preventDefault();clearAlerts();try{const g=golonganKeluar.value,jt=parseDate(jatuhTempoKeluar.value),t=parseDate(tanggalKeluar.value),p=pemutihanKeluar.value==="YA";if(!g)throw new Error("Golongan kendaraan wajib dipilih.");renderResult(hitungMutasiKeluar(g,jt,t,p))}catch(x){showAlert("alertKeluar",x.message)}});formMasukLama.addEventListener("submit",e=>{e.preventDefault();clearAlerts();try{const g=golonganMasukLama.value,jt=parseDate(jatuhTempoMasukLama.value),t=parseDate(tanggalMasukLama.value),p=pemutihanMasukLama.value==="YA";if(!g)throw new Error("Golongan kendaraan wajib dipilih.");renderResult(hitungMutasiMasukLama(g,jt,p,t))}catch(x){showAlert("alertMasukLama",x.message)}})});
 </script>
-</body>f
+</body>
 </html>
