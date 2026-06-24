@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KAMUS SW - Kalkulator Mutasi SWDKLLJ</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#eef2f7;color:#1f2937}
+    .container{width:min(1180px,94%);margin:32px auto}
+    .card{background:#fff;border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 10px 28px rgba(15,23,42,.08)}
+    .hero{background:linear-gradient(135deg,#123c69,#1f6f8b);color:#fff}
+    .eyebrow{margin:0 0 8px;text-transform:uppercase;letter-spacing:1.5px;font-size:12px;opacity:.85}
+    h1,h2,h3{margin-top:0}.subtitle{margin-bottom:0;opacity:.92;line-height:1.5}
+    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    .tab-btn{border:none;border-radius:12px;background:#dbeafe;color:#123c69;font-weight:800;cursor:pointer;padding:14px 12px}
+    .tab-btn.active{background:#123c69;color:#fff}.page{display:none}.page.active{display:block}
+    form{display:grid;gap:16px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    label{display:block;font-weight:700;margin-bottom:8px}
+    select,input,button{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px}
+    .submit-btn{margin-top:8px;border:none;background:#123c69;color:#fff;font-weight:700;cursor:pointer}.submit-btn:hover{background:#0f2f52}
+    .hint{margin:0;color:#64748b;line-height:1.5;font-size:14px}
+    .alert{margin-top:16px;padding:12px;background:#fee2e2;border:1px solid #fecaca;border-radius:10px;color:#991b1b;display:none}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+    .summary div{padding:16px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0}.summary span{display:block;color:#64748b;font-size:13px;margin-bottom:6px}.summary strong{font-size:20px}
+    .info{background:#f8fafc;border:1px solid #e2e8f0;padding:16px;border-radius:12px;margin-bottom:18px}.info p{margin:6px 0}.note{color:#92400e}
+    table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:12px}th,td{text-align:left;padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top}th{background:#f1f5f9}tfoot th{background:#dbeafe}
+    .result{display:none}.footer{margin-top:24px;background:#123c69;color:#fff;text-align:center;padding:12px 16px;font-size:13px;font-weight:600}
+    @media(max-width:760px){.tabs,.grid,.summary{grid-template-columns:1fr}.container{margin:16px auto}.card{padding:18px}table{display:block;overflow-x:auto;white-space:nowrap}.footer{font-size:12px;padding:10px 12px}}
+  </style>
+</head>
+<body>
+<main class="container">
+  <section class="card hero"><p class="eyebrow">Simulasi Mutasi Kendaraan</p><h1>KAMUS SW - Kalkulator Mutasi SWDKLLJ</h1><p class="subtitle">User Acceptance Testing</p></section>
+  <section class="tabs">
+    <button type="button" class="tab-btn active" data-target="pageMasukBaru">Mutasi Masuk</button>
+    <button type="button" class="tab-btn" data-target="pageKeluar">Mutasi Keluar</button>
+    <button type="button" class="tab-btn" data-target="pageMasukLama">Mutasi Masuk Perhitungan Lama</button>
+  </section>
+  <section id="pageMasukBaru" class="card page active">
+    <h2>Mutasi Masuk</h2><p class="hint">Berdasarkan Surat Edaran Divisi Asuransi No AS/SE/39/2026 tanggal 19 Mei 2026 Hal Pembayaran SWDKLLJ atas Transaksi Kendaraan Mutasi Keluar dan Mutasi Datang</p><br>
+    <form id="formMasukBaru"><div class="grid"><div><label for="golonganMasukBaru">Golongan Kendaraan</label><select id="golonganMasukBaru" required><option value="" disabled selected>Pilih golongan</option></select></div><div><label for="jatuhTempoMasukBaru">Masa Laku Awal</label><input type="date" id="jatuhTempoMasukBaru" required /></div><div><label for="tanggalMasukBaru">Tanggal Pendaftaran di Samsat Tujuan</label><input type="date" id="tanggalMasukBaru" required /></div><div><label for="pemutihanMasukBaru">Pemutihan Denda</label><select id="pemutihanMasukBaru" required><option value="TIDAK">TIDAK</option><option value="YA">YA</option></select></div></div><button type="submit" class="submit-btn">Hitung Mutasi Masuk</button></form><div id="alertMasukBaru" class="alert"></div>
+  </section>
+  <section id="pageKeluar" class="card page">
+    <h2>Mutasi Keluar</h2><p class="hint">Berdasarkan Surat Edaran Divisi Asuransi No AS/SE/39/2026 tanggal 19 Mei 2026 Hal Pembayaran SWDKLLJ atas Transaksi Kendaraan Mutasi Keluar dan Mutasi Datang</p><br>
+    <form id="formKeluar"><div class="grid"><div><label for="golonganKeluar">Golongan Kendaraan</label><select id="golonganKeluar" required><option value="" disabled selected>Pilih golongan</option></select></div><div><label for="jatuhTempoKeluar">Masa Laku Awal</label><input type="date" id="jatuhTempoKeluar" required /></div><div><label for="tanggalKeluar">Tanggal Mutasi Keluar</label><input type="date" id="tanggalKeluar" required /></div><div><label for="pemutihanKeluar">Pemutihan Denda</label><select id="pemutihanKeluar" required><option value="TIDAK">TIDAK</option><option value="YA">YA</option></select></div></div><button type="submit" class="submit-btn">Hitung Mutasi Keluar</button></form><div id="alertKeluar" class="alert"></div>
+  </section>
+  <section id="pageMasukLama" class="card page">
+    <h2>Mutasi Masuk Perhitungan Lama</h2><p class="hint">Maksimal 5 tahun penuh terakhir ditambah prorata. Pembulatan prorata mengikuti ketentuan baru: 1–15 hari dibulatkan ke bawah, lebih dari 15 hari dibulatkan ke atas.</p><br>
+    <form id="formMasukLama"><div class="grid"><div><label for="golonganMasukLama">Golongan Kendaraan</label><select id="golonganMasukLama" required><option value="" disabled selected>Pilih golongan</option></select></div><div><label for="jatuhTempoMasukLama">Masa Laku Awal</label><input type="date" id="jatuhTempoMasukLama" required /></div><div><label for="tanggalMasukLama">Tanggal Transaksi</label><input type="date" id="tanggalMasukLama" required /></div><div><label for="pemutihanMasukLama">Pemutihan Denda</label><select id="pemutihanMasukLama" required><option value="TIDAK">TIDAK</option><option value="YA">YA</option></select></div></div><button type="submit" class="submit-btn">Hitung Perhitungan Lama</button></form><div id="alertMasukLama" class="alert"></div>
+  </section>
+  <section id="resultSection" class="card result"><h2 id="resultTitle">Hasil Perhitungan</h2><div class="summary"><div><span>Golongan</span><strong id="sumGolongan">-</strong></div><div><span>Pokok</span><strong id="sumPokok">-</strong></div><div><span>Denda</span><strong id="sumDenda">-</strong></div><div><span>Total</span><strong id="sumTotal">-</strong></div></div><div class="info" id="infoBox"></div><table><thead><tr><th>Uraian</th><th>Periode</th><th>Bulan</th><th>Pokok</th><th>Denda</th><th>Total</th></tr></thead><tbody id="rincianBody"></tbody><tfoot><tr><th colspan="3">Jumlah</th><th id="footPokok">-</th><th id="footDenda">-</th><th id="footTotal">-</th></tr></tfoot></table></section>
+</main>
+<footer class="footer">2026 - @sentanu_jr</footer>
+<script>
+const TARIF={A:{nama:"Sepeda motor <= 50 cc, ambulance, jenazah, pemadam kebakaran",swdkllj:0,kd:3000},B:{nama:"Traktor, bulldozer, forklift, mobil derek, excavator, crane, dan sejenisnya",swdkllj:20000,kd:3000},C1:{nama:"Sepeda motor > 50 cc s.d. 250 cc dan kendaraan bermotor roda tiga",swdkllj:32000,kd:3000},C2:{nama:"Sepeda motor dan scooter > 250 cc",swdkllj:80000,kd:3000},DP:{nama:"Pick up/mobil barang <= 2.400 cc, sedan, jeep, dan mobil penumpang bukan angkutan umum",swdkllj:140000,kd:3000},DU:{nama:"Mobil penumpang angkutan umum <= 1.600 cc",swdkllj:70000,kd:3000},EP:{nama:"Bus dan microbus bukan angkutan umum",swdkllj:150000,kd:3000},EU:{nama:"Bus dan microbus angkutan umum serta mobil penumpang angkutan umum lainnya > 1.600 cc",swdkllj:87000,kd:3000},F:{nama:"Truck, mobil tangki, mobil gandengan, mobil barang > 2.400 cc, truck container, dan sejenisnya",swdkllj:160000,kd:3000}};
+const TARIF_PRORATA={A:[3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000],B:[4700,6400,8000,9700,11400,13000,14700,16400,18000,19700,21400,23000],C1:[5700,8400,11000,13700,16400,19000,21700,24400,27000,29700,32400,35000],C2:[9700,16400,23000,29700,36400,43000,49700,56400,63000,69700,76400,83000],DP:[14700,26400,38000,49700,61400,73000,84700,96400,108000,119700,131400,143000],DU:[8900,14700,20500,26400,32200,38000,43900,49700,55500,61400,67200,73000],EP:[15500,28000,40500,53000,65500,78000,90500,103000,115500,128000,140500,153000],EU:[10300,17500,24800,32000,39300,46500,53800,61000,68300,75500,82800,90000],F:[16400,29700,43000,56400,69700,83000,96400,109700,123000,136400,149700,163000]};
+const BATAS_MAKS_TAHUN_PENUH=5,BATAS_MAKS_DENDA_PER_TAHUN=100000;
+const HARI_LIBUR_2026=["2026-01-01","2026-01-04","2026-01-11","2026-01-16","2026-01-18","2026-01-25","2026-02-01","2026-02-08","2026-02-15","2026-02-16","2026-02-17","2026-02-22","2026-03-01","2026-03-08","2026-03-15","2026-03-18","2026-03-19","2026-03-20","2026-03-21","2026-03-22","2026-03-23","2026-03-24","2026-03-29","2026-04-03","2026-04-05","2026-04-12","2026-04-19","2026-04-26","2026-05-01","2026-05-03","2026-05-10","2026-05-14","2026-05-15","2026-05-17","2026-05-24","2026-05-27","2026-05-28","2026-05-31","2026-06-01","2026-06-07","2026-06-14","2026-06-16","2026-06-21","2026-06-28","2026-07-05","2026-07-12","2026-07-19","2026-07-26","2026-08-02","2026-08-09","2026-08-16","2026-08-17","2026-08-23","2026-08-25","2026-08-30","2026-09-06","2026-09-13","2026-09-20","2026-09-27","2026-10-04","2026-10-11","2026-10-18","2026-10-25","2026-11-01","2026-11-08","2026-11-15","2026-11-22","2026-11-29","2026-12-06","2026-12-13","2026-12-20","2026-12-24","2026-12-25","2026-12-27"];
+function rupiah(n){return"Rp "+Math.round(n||0).toLocaleString("id-ID")}function parseDate(v){const p=v.split("-").map(Number);return new Date(p[0],p[1]-1,p[2])}function formatDate(d){return d.toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric"})}function toInputDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}function dateKey(d){return toInputDate(d)}function isHariLibur(d){return HARI_LIBUR_2026.includes(dateKey(d))}function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}function tambahTahun(d,y){const yy=d.getFullYear()+y,m=d.getMonth(),dd=Math.min(d.getDate(),daysInMonth(yy,m));return new Date(yy,m,dd)}function makeDateSafe(y,m,day){return new Date(y,m,Math.min(day,daysInMonth(y,m)))}function anniversaryOnOrBefore(target,baseM,baseD){let c=makeDateSafe(target.getFullYear(),baseM,baseD);if(c>target)c=makeDateSafe(target.getFullYear()-1,baseM,baseD);return c}function bulanProrataLama(s,e){if(e<=s)return 0;let m=(e.getFullYear()-s.getFullYear())*12+(e.getMonth()-s.getMonth());if(e.getDate()>s.getDate())m+=1;return Math.max(1,Math.min(m,12))}function bulanProrataBaru(s,e){
+  if(e<=s)return 0;
+
+  let bulan=(e.getFullYear()-s.getFullYear())*12+(e.getMonth()-s.getMonth());
+  let hari=e.getDate()-s.getDate();
+
+  if(hari<0){
+    bulan-=1;
+    const hariBulanSebelumnya=new Date(e.getFullYear(),e.getMonth(),0).getDate();
+    hari=hariBulanSebelumnya-s.getDate()+e.getDate();
+  }
+
+  // Rules AS/SE/39/2026:
+  // 1 sampai 15 hari dibulatkan ke bawah.
+  // Lebih dari 15 hari dibulatkan ke atas.
+  if(hari>15)bulan+=1;
+
+  // Jika hasil pembulatan 0 bulan, tidak dikenakan prorata.
+  return Math.max(0,Math.min(bulan,12));
+}
+function selisihHari(s,e){const ms=86400000,start=Date.UTC(s.getFullYear(),s.getMonth(),s.getDate()),end=Date.UTC(e.getFullYear(),e.getMonth(),e.getDate());return Math.floor((end-start)/ms)}
+function tarifDenda(sw,hari,tglJatuhTempo){if(sw<=0)return 0;if(hari<=0)return 0;if(hari===1&&isHariLibur(tglJatuhTempo))return 0;let r=1;if(hari>=1&&hari<=90)r=.25;else if(hari<=180)r=.5;else if(hari<=270)r=.75;else r=1;return Math.min(sw*r,BATAS_MAKS_DENDA_PER_TAHUN)}
+function buatProrata(golongan,periodeAwal,periodeAkhir,modeBulan){
+  if(periodeAkhir<=periodeAwal)return null;
+
+  const bulan=modeBulan==="baru"
+    ? bulanProrataBaru(periodeAwal,periodeAkhir)
+    : bulanProrataLama(periodeAwal,periodeAkhir);
+
+  // Jika pembulatan menghasilkan 0 bulan, jangan tampilkan baris prorata.
+  if(bulan<=0)return null;
+
+  const pokok=TARIF_PRORATA[golongan][bulan-1];
+
+  return{
+    tipe:"prorata",
+    uraian:"Prorata",
+    periodeAwal:new Date(periodeAwal),
+    periodeAkhir:new Date(periodeAkhir),
+    bulan,
+    pokok,
+    denda:0,
+    total:pokok
+  };
+}
+
+function hitungMutasiMasukBaru(golongan,jatuhTempoLama,tanggalDaftar,pemutihan){const data=TARIF[golongan];if(!data)throw new Error("Golongan kendaraan tidak valid.");const sw=data.swdkllj,kd=data.kd,pokokTahunan=sw+kd,masaLakuBaru=tambahTahun(tanggalDaftar,1);const rincian=[];let totalPokok=0,totalDenda=0;if(jatuhTempoLama>tanggalDaftar){const prorata=buatProrata(golongan,jatuhTempoLama,masaLakuBaru,"baru");if(prorata){rincian.push(prorata);totalPokok+=prorata.pokok}}else{const jatuhTempoBerjalan=anniversaryOnOrBefore(tanggalDaftar,jatuhTempoLama.getMonth(),jatuhTempoLama.getDate()),akhirTahunBerjalan=tambahTahun(jatuhTempoBerjalan,1),hariTerlambat=Math.max(0,selisihHari(jatuhTempoBerjalan,tanggalDaftar));let denda=tarifDenda(sw,hariTerlambat,jatuhTempoBerjalan);if(pemutihan)denda=0;rincian.push({tipe:"tahun",uraian:"Tahun Berjalan",periodeAwal:new Date(jatuhTempoBerjalan),periodeAkhir:new Date(akhirTahunBerjalan),bulan:12,pokok:pokokTahunan,denda,total:pokokTahunan+denda});totalPokok+=pokokTahunan;totalDenda+=denda;const prorata=buatProrata(golongan,akhirTahunBerjalan,masaLakuBaru,"baru");if(prorata){rincian.push(prorata);totalPokok+=prorata.pokok}}rincian.sort((a,b)=>a.periodeAwal-b.periodeAwal);return{mode:"Mutasi Masuk",golongan,jenis:data.nama,swdkllj:sw,kd,tanggalDaftar,jatuhTempoLama,masaLakuBaru,pemutihan,rincian,totalPokok,totalDenda,totalBayar:totalPokok+totalDenda}}
+function hitungMutasiKeluar(golongan,jatuhTempoLama,tanggalMutasi,pemutihan){
+  const data=TARIF[golongan];
+  if(!data)throw new Error("Golongan kendaraan tidak valid.");
+
+  const sw=data.swdkllj;
+  const kd=data.kd;
+  const pokokTahunan=sw+kd;
+  const rincian=[];
+  let totalPokok=0,totalDenda=0;
+
+  // Untuk Mutasi Keluar, field "Masa Laku Awal"
+  // diperlakukan sebagai awal masa berlaku tertunggak.
+  // Pengutipan hanya tahun penuh yang sudah jatuh tempo, tanpa prorata.
+  // Maksimal 5 tahun terakhir.
+  let periodeAwal=new Date(jatuhTempoLama);
+  const seluruhPeriode=[];
+
+  while(tambahTahun(periodeAwal,1)<=tanggalMutasi){
+    const periodeAkhir=tambahTahun(periodeAwal,1);
+
+    seluruhPeriode.push({
+      periodeAwal:new Date(periodeAwal),
+      periodeAkhir:new Date(periodeAkhir)
+    });
+
+    periodeAwal=periodeAkhir;
+  }
+
+  // Ambil maksimal 5 tahun penuh terakhir.
+  const periodeTerhitung=seluruhPeriode.slice(-BATAS_MAKS_TAHUN_PENUH);
+
+  periodeTerhitung.forEach((p)=>{
+    let denda=Math.min(sw,BATAS_MAKS_DENDA_PER_TAHUN);
+    if(pemutihan)denda=0;
+
+    rincian.push({
+      tipe:"tahun",
+      uraian:"Tahun Lalu",
+      periodeAwal:p.periodeAwal,
+      periodeAkhir:p.periodeAkhir,
+      bulan:12,
+      pokok:pokokTahunan,
+      denda,
+      total:pokokTahunan+denda
+    });
+
+    totalPokok+=pokokTahunan;
+    totalDenda+=denda;
+  });
+
+  // Urutan tampil: periode terbaru di atas.
+  rincian.sort((a,b)=>b.periodeAkhir-a.periodeAkhir);
+
+  // Label: Tahun Lalu 1 untuk periode terbaru, maksimal sampai Tahun Lalu 5.
+  rincian.forEach((r,i)=>{
+    r.uraian=`Tahun Lalu ${i+1}`;
+  });
+
+  return{
+    mode:"Mutasi Keluar",
+    golongan,
+    jenis:data.nama,
+    swdkllj:sw,
+    kd,
+    jatuhTempoLama,
+    tanggalMutasi,
+    pemutihan,
+    rincian,
+    totalPokok,
+    totalDenda,
+    totalBayar:totalPokok+totalDenda
+  };
+}
+
+function hitungMutasiMasukLama(golongan,tglLama,pemutihan,tglHitung){const data=TARIF[golongan];if(!data)throw new Error("Golongan kendaraan tidak valid.");const sw=data.swdkllj,kd=data.kd,pokokTahunan=sw+kd,tglBaru=tambahTahun(tglHitung,1),anchor=anniversaryOnOrBefore(tglBaru,tglLama.getMonth(),tglLama.getDate()),batas=tambahTahun(anchor,-BATAS_MAKS_TAHUN_PENUH),awal=tglLama>batas?tglLama:batas;let rincian=[],totalPokok=0,totalDenda=0,cursor=new Date(awal);while(cursor<anchor){const akhir=tambahTahun(cursor,1);if(akhir>anchor)break;const hariTerlambat=Math.max(0,selisihHari(cursor,tglHitung));let denda=tarifDenda(sw,hariTerlambat,cursor);const tahunBerjalan=akhir.getTime()===anchor.getTime();if(pemutihan&&!tahunBerjalan)denda=0;const pokok=pokokTahunan;rincian.push({tipe:"tahun",periodeAkhir:akhir,uraian:tahunBerjalan?"Tahun Berjalan":"",periodeAwal:new Date(cursor),bulan:12,pokok,denda,total:pokok+denda});totalPokok+=pokok;totalDenda+=denda;cursor=akhir}if(anchor<tglBaru){const prorata=buatProrata(golongan,anchor,tglBaru,"baru");if(prorata){rincian.push(prorata);totalPokok+=prorata.pokok}}rincian.sort((a,b)=>b.periodeAkhir-a.periodeAkhir);let no=0;rincian.forEach(r=>{if(r.tipe==="prorata")r.uraian="Prorata";else if(r.uraian!=="Tahun Berjalan"){no++;r.uraian=`Tahun Lalu ${no}`}});return{mode:"Mutasi Masuk Perhitungan Lama",golongan,jenis:data.nama,swdkllj:sw,kd,tglLama,tglHitung,tglBaru,anchor,batas,awal,pemutihan,rincian,totalPokok,totalDenda,totalBayar:totalPokok+totalDenda,terkena:tglLama<batas,catatan:"Perhitungan lama menggunakan maksimal 5 tahun penuh terakhir ditambah prorata, dengan pembulatan prorata 1–15 hari ke bawah dan lebih dari 15 hari ke atas."}}
+function isiGolongan(selectId){const s=document.getElementById(selectId);Object.entries(TARIF).forEach(([k,i])=>{const o=document.createElement("option");o.value=k;o.textContent=`${k} - ${i.nama}`;s.appendChild(o)})}function showAlert(id,m){const a=document.getElementById(id);a.textContent=m;a.style.display="block";document.getElementById("resultSection").style.display="none"}function clearAlerts(){["alertMasukBaru","alertKeluar","alertMasukLama"].forEach(id=>{const a=document.getElementById(id);a.textContent="";a.style.display="none"})}
+function renderResult(h){resultTitle.textContent="Hasil Perhitungan - "+h.mode;sumGolongan.textContent=h.golongan;sumPokok.textContent=rupiah(h.totalPokok);sumDenda.textContent=rupiah(h.totalDenda);sumTotal.textContent=rupiah(h.totalBayar);let tanggalHtml="";if(h.mode==="Mutasi Masuk"){tanggalHtml=`<p><b>Tanggal Pendaftaran:</b> ${formatDate(h.tanggalDaftar)}</p><p><b>Masa Laku Awal:</b> ${formatDate(h.jatuhTempoLama)}</p><p><b>Masa Laku Baru:</b> ${formatDate(h.masaLakuBaru)}</p>`}else if(h.mode==="Mutasi Keluar"){tanggalHtml=`<p><b>Tanggal Mutasi Keluar:</b> ${formatDate(h.tanggalMutasi)}</p><p><b>Masa Laku Awal:</b> ${formatDate(h.jatuhTempoLama)}</p>`}else{tanggalHtml=`<p><b>Tanggal Transaksi:</b> ${formatDate(h.tglHitung)}</p><p><b>Masa Laku Awal:</b> ${formatDate(h.tglLama)}</p><p><b>Masa Laku Baru:</b> ${formatDate(h.tglBaru)}</p><p><b>Awal Prorata:</b> ${formatDate(h.anchor)}</p>`}infoBox.innerHTML=`<p><b>Jenis Kendaraan:</b> ${h.jenis}</p><p><b>SWDKLLJ:</b> ${rupiah(h.swdkllj)} | <b>KD/Sertifikat:</b> ${rupiah(h.kd)}</p>${tanggalHtml}<p><b>Pemutihan Denda:</b> ${h.pemutihan?"YA":"TIDAK"}</p>${h.terkena?'<p class="note"><b>Catatan tambahan:</b> Masa berlaku lama melewati batas maksimal, sehingga hanya dihitung 5 tahun penuh terakhir ditambah prorata.</p>':""}`;rincianBody.innerHTML="";if(h.rincian.length===0){const tr=document.createElement("tr");tr.innerHTML=`<td colspan="6">Tidak ada pengutipan SWDKLLJ berdasarkan ketentuan yang dipilih.</td>`;rincianBody.appendChild(tr)}else{const rincianTampil=[...h.rincian].sort((a,b)=>{if(a.tipe==="prorata"&&b.tipe!=="prorata")return -1;if(a.tipe!=="prorata"&&b.tipe==="prorata")return 1;return b.periodeAkhir-a.periodeAkhir});rincianTampil.forEach(r=>{const tr=document.createElement("tr");tr.innerHTML=`<td>${r.uraian}</td><td>${formatDate(r.periodeAwal)} s/d ${formatDate(r.periodeAkhir)}</td><td>${r.bulan}</td><td>${rupiah(r.pokok)}</td><td>${rupiah(r.denda)}</td><td>${rupiah(r.total)}</td>`;rincianBody.appendChild(tr)})}footPokok.textContent=rupiah(h.totalPokok);footDenda.textContent=rupiah(h.totalDenda);footTotal.textContent=rupiah(h.totalBayar);resultSection.style.display="block";resultSection.scrollIntoView({behavior:"smooth",block:"start"})}
+function switchPage(targetId){document.querySelectorAll(".tab-btn").forEach(btn=>btn.classList.toggle("active",btn.dataset.target===targetId));document.querySelectorAll(".page").forEach(page=>page.classList.toggle("active",page.id===targetId));clearAlerts();document.getElementById("resultSection").style.display="none"}
+document.addEventListener("DOMContentLoaded",()=>{isiGolongan("golonganMasukBaru");isiGolongan("golonganKeluar");isiGolongan("golonganMasukLama");const today=toInputDate(new Date());tanggalMasukBaru.value=today;tanggalKeluar.value=today;tanggalMasukLama.value=today;document.querySelectorAll(".tab-btn").forEach(btn=>btn.addEventListener("click",()=>switchPage(btn.dataset.target)));formMasukBaru.addEventListener("submit",e=>{e.preventDefault();clearAlerts();try{const g=golonganMasukBaru.value,jt=parseDate(jatuhTempoMasukBaru.value),t=parseDate(tanggalMasukBaru.value),p=pemutihanMasukBaru.value==="YA";if(!g)throw new Error("Golongan kendaraan wajib dipilih.");renderResult(hitungMutasiMasukBaru(g,jt,t,p))}catch(x){showAlert("alertMasukBaru",x.message)}});formKeluar.addEventListener("submit",e=>{e.preventDefault();clearAlerts();try{const g=golonganKeluar.value,jt=parseDate(jatuhTempoKeluar.value),t=parseDate(tanggalKeluar.value),p=pemutihanKeluar.value==="YA";if(!g)throw new Error("Golongan kendaraan wajib dipilih.");renderResult(hitungMutasiKeluar(g,jt,t,p))}catch(x){showAlert("alertKeluar",x.message)}});formMasukLama.addEventListener("submit",e=>{e.preventDefault();clearAlerts();try{const g=golonganMasukLama.value,jt=parseDate(jatuhTempoMasukLama.value),t=parseDate(tanggalMasukLama.value),p=pemutihanMasukLama.value==="YA";if(!g)throw new Error("Golongan kendaraan wajib dipilih.");renderResult(hitungMutasiMasukLama(g,jt,p,t))}catch(x){showAlert("alertMasukLama",x.message)}})});
+</script>
+</body>
+</html>
